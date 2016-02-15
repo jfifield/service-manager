@@ -2,6 +2,7 @@
   (:require [compojure.core :refer [defroutes routes]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.file-info :refer [wrap-file-info]]
+            [ring.middleware.webjars :refer [wrap-webjars]]
             [hiccup.middleware :refer [wrap-base-url]]
             [compojure.handler :as handler]
             [compojure.route :as route]
@@ -20,4 +21,5 @@
 (def app
   (-> (routes home-routes app-routes)
       (handler/site)
-      (wrap-base-url)))
+      (wrap-base-url)
+      wrap-webjars))

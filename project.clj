@@ -4,7 +4,10 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [compojure "1.1.6"]
                  [hiccup "1.0.5"]
-                 [ring-server "0.3.1"]]
+                 [ring-server "0.3.1"]
+                 [ring-webjars "0.1.1"]
+                 [org.webjars/bootstrap "3.3.6"]
+                 [org.webjars/jquery "1.11.3"]]
   :plugins [[lein-ring "0.8.12"]]
   :ring {:handler service-manager.handler/app
          :init service-manager.handler/init
