@@ -6,7 +6,8 @@
             [hiccup.middleware :refer [wrap-base-url]]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [service-manager.routes.home :refer [home-routes]]))
+            [service-manager.routes.home :refer [home-routes]]
+            [service-manager.routes.hosts :refer [hosts-routes]]))
 
 (defn init []
   (println "service-manager is starting"))
@@ -19,7 +20,10 @@
   (route/not-found "Not Found"))
 
 (def app
-  (-> (routes home-routes app-routes)
+  (-> (routes
+        home-routes
+        hosts-routes
+        app-routes)
       (handler/site)
       (wrap-base-url)
       wrap-webjars))
