@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS keypairs (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  private_key TEXT NOT NULL,
+  public_key TEXT NOT NULL
+);

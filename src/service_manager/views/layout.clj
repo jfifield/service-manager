@@ -12,7 +12,8 @@
     [:div#navbar.collapse.navbar-collapse
      [:ul.nav.navbar-nav
       [:li.active [:a {:href "#"} "Link 1"]]
-      [:li [:a {:href "/hosts"} "Hosts"]]]]]])
+      [:li [:a {:href "/hosts"} "Hosts"]]
+      [:li [:a {:href "/keypairs"} "Key Pairs"]]]]]])
 
 (defn common [& body]
   (html5

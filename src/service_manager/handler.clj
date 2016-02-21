@@ -7,7 +7,8 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [service-manager.routes.home :refer [home-routes]]
-            [service-manager.routes.hosts :refer [hosts-routes]]))
+            [service-manager.routes.hosts :refer [hosts-routes]]
+            [service-manager.routes.keypairs :refer [keypairs-routes]]))
 
 (defn init []
   (println "service-manager is starting"))
@@ -23,6 +24,7 @@
   (-> (routes
         home-routes
         hosts-routes
+        keypairs-routes
         app-routes)
       (handler/site)
       (wrap-base-url)
