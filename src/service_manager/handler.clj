@@ -9,7 +9,8 @@
             [service-manager.routes.home :refer [home-routes]]
             [service-manager.routes.hosts :refer [hosts-routes]]
             [service-manager.routes.environments :refer [environments-routes]]
-            [service-manager.routes.keypairs :refer [keypairs-routes]]))
+            [service-manager.routes.keypairs :refer [keypairs-routes]]
+            [service-manager.routes.services :refer [services-routes]]))
 
 (defn init []
   (println "service-manager is starting"))
@@ -27,6 +28,7 @@
         hosts-routes
         environments-routes
         keypairs-routes
+        services-routes
         app-routes)
       (handler/site)
       (wrap-base-url)

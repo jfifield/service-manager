@@ -5,7 +5,8 @@
   [{:id :home :href "/" :title "Home"}
    {:id :hosts :href "/hosts" :title "Hosts"}
    {:id :environments :href "/environments" :title "Environments"}
-   {:id :keypairs :href "/keypairs" :title "Key Pairs"}])
+   {:id :keypairs :href "/keypairs" :title "Key Pairs"}
+   {:id :services :href "/services" :title "Services"}])
 
 (defn nav-bar [active-nav-item]
   [:nav.navbar.navbar-default.navbar-fixed-top

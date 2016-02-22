@@ -22,8 +22,10 @@
 (defentity hosts)
 (defentity environments)
 (defentity keypairs)
+(defentity services)
 
 (defcrud hosts)
 (defcrud environments)
 (defcrud keypairs)
+(defcrud services)
 
