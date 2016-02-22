@@ -8,6 +8,7 @@
             [compojure.route :as route]
             [service-manager.routes.home :refer [home-routes]]
             [service-manager.routes.hosts :refer [hosts-routes]]
+            [service-manager.routes.environments :refer [environments-routes]]
             [service-manager.routes.keypairs :refer [keypairs-routes]]))
 
 (defn init []
@@ -24,6 +25,7 @@
   (-> (routes
         home-routes
         hosts-routes
+        environments-routes
         keypairs-routes
         app-routes)
       (handler/site)

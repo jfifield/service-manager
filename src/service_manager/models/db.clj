@@ -20,8 +20,10 @@
            (delete ~entity (where {:id ~'id}))))))
 
 (defentity hosts)
+(defentity environments)
 (defentity keypairs)
 
 (defcrud hosts)
+(defcrud environments)
 (defcrud keypairs)
 

@@ -13,6 +13,7 @@
      [:ul.nav.navbar-nav
       [:li.active [:a {:href "#"} "Link 1"]]
       [:li [:a {:href "/hosts"} "Hosts"]]
+      [:li [:a {:href "/environments"} "Environments"]]
       [:li [:a {:href "/keypairs"} "Key Pairs"]]]]]])
 
 (defn common [& body]
