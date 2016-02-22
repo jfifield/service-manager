@@ -8,29 +8,31 @@
 (defn list-hosts-page []
   (let [hosts (db/get-hosts)]
     (layout/common
-     [:div.pull-right {:style "margin-bottom: 10px;"}
-      [:a.btn.btn-default {:href "/hosts/new"}
-       [:span.glyphicon.glyphicon-plus] " Add Host"]]
-     [:table.table
-      [:tr
-       (map #(vector :th %) ["Name" "Address" "Username"])
-       (repeat 3 [:th {:style "width: 1%;"}])]
-      (for [host hosts]
-        [:tr
-         (map #(vector :td (% host)) [:name :address :username])
-         [:td
-          [:a.btn.btn-default {:href (str "/hosts/" (:id host))} "View"]]
-         [:td
-          [:a.btn.btn-default {:href (str "/hosts/" (:id host) "/edit")} "Edit"]]
-         [:td
-          [:form {:method "post" :action (str "/hosts/" (:id host))}
-           [:input {:type "hidden" :name "_method" :value "delete"}]
-           [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
+      :hosts
+      [:div.pull-right {:style "margin-bottom: 10px;"}
+       [:a.btn.btn-default {:href "/hosts/new"}
+        [:span.glyphicon.glyphicon-plus] " Add Host"]]
+      [:table.table
+       [:tr
+        (map #(vector :th %) ["Name" "Address" "Username"])
+        (repeat 3 [:th {:style "width: 1%;"}])]
+       (for [host hosts]
+         [:tr
+          (map #(vector :td (% host)) [:name :address :username])
+          [:td
+           [:a.btn.btn-default {:href (str "/hosts/" (:id host))} "View"]]
+          [:td
+           [:a.btn.btn-default {:href (str "/hosts/" (:id host) "/edit")} "Edit"]]
+          [:td
+           [:form {:method "post" :action (str "/hosts/" (:id host))}
+            [:input {:type "hidden" :name "_method" :value "delete"}]
+            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
 
 (defn add-host-page []
   (let [environments (db/get-environments)
         keypairs (db/get-keypairs)]
     (layout/common
+      :hosts
       [:form {:method "post" :action "/hosts"}
        (map #(text-field % {}) [:name :address :username])
        (select-field :environment_id {} environments {:title "Environment"})
@@ -45,6 +47,7 @@
         environments (db/get-environments)
         keypairs (db/get-keypairs)]
     (layout/common
+      :hosts
       [:form {:method "post" :action (str "/hosts/" id)}
        [:input {:type "hidden" :name "_method" :value "put"}]
        (map #(text-field % host) [:name :address :username])
@@ -70,6 +73,7 @@
         environment (db/get-environment (:environment_id host))
         keypair (db/get-keypair (:keypair_id host))]
     (layout/common
+      :hosts
       [:h1 (:name host)]
       [:div.row
        [:div.col-md-2 [:strong "Address"]]

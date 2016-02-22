@@ -8,27 +8,29 @@
 (defn list-environments-page []
   (let [environments (db/get-environments)]
     (layout/common
-     [:div.pull-right {:style "margin-bottom: 10px;"}
-      [:a.btn.btn-default {:href "/environments/new"}
-       [:span.glyphicon.glyphicon-plus] " Add Environment"]]
-     [:table.table
-      [:tr
-       [:th "Name"]
-       (repeat 3 [:th {:style "width: 1%;"}])]
-      (for [environment environments]
-        [:tr
-         [:td (:name environment)]
-         [:td
-          [:a.btn.btn-default {:href (str "/environments/" (:id environment))} "View"]]
-         [:td
-          [:a.btn.btn-default {:href (str "/environments/" (:id environment) "/edit")} "Edit"]]
-         [:td
-          [:form {:method "post" :action (str "/environments/" (:id environment))}
-           [:input {:type "hidden" :name "_method" :value "delete"}]
-           [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
+      :environments
+      [:div.pull-right {:style "margin-bottom: 10px;"}
+       [:a.btn.btn-default {:href "/environments/new"}
+        [:span.glyphicon.glyphicon-plus] " Add Environment"]]
+      [:table.table
+       [:tr
+        [:th "Name"]
+        (repeat 3 [:th {:style "width: 1%;"}])]
+       (for [environment environments]
+         [:tr
+          [:td (:name environment)]
+          [:td
+           [:a.btn.btn-default {:href (str "/environments/" (:id environment))} "View"]]
+          [:td
+           [:a.btn.btn-default {:href (str "/environments/" (:id environment) "/edit")} "Edit"]]
+          [:td
+           [:form {:method "post" :action (str "/environments/" (:id environment))}
+            [:input {:type "hidden" :name "_method" :value "delete"}]
+            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
 
 (defn add-environment-page []
   (layout/common
+    :environments
     [:form {:method "post" :action "/environments"}
      (text-field :name {})
      [:button.btn.btn-default {:type "submit"}
@@ -39,6 +41,7 @@
 (defn edit-environment-page [id]
   (let [environment (db/get-environment id)]
     (layout/common
+      :environments
       [:form {:method "post" :action (str "/environments/" id)}
        [:input {:type "hidden" :name "_method" :value "put"}]
        (text-field :name environment)
@@ -60,6 +63,7 @@
 (defn view-environment [id]
   (let [environment (db/get-environment id)]
     (layout/common
+      :environments
       [:h1 (:name environment)])))
 
 (defn delete-environment [id]
