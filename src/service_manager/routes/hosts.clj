@@ -1,8 +1,8 @@
 (ns service-manager.routes.hosts
   (:require [compojure.core :refer :all]
-            [inflections.core :refer [titleize]]
             [ring.util.response :as response]
             [service-manager.views.layout :as layout]
+            [service-manager.views.form :refer :all]
             [service-manager.models.db :as db]))
 
 (defn list-hosts-page []
@@ -26,21 +26,6 @@
           [:form {:method "post" :action (str "/hosts/" (:id host))}
            [:input {:type "hidden" :name "_method" :value "delete"}]
            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
-
-(defn text-field [f o]
-  (let [title (titleize (name f))]
-    [:div.form-group
-     [:label {:for f} title]
-     [:input.form-control {:type "text" :id f :name f :placeholder title :value (f o)}]]))
-
-(defn select-field [f o options-objects opts]
-  (let [title (:title opts (titleize (name f)))]
-    [:div.form-group
-     [:label {:for f} title]
-     [:select.form-control {:id f :name f}
-      [:option]
-      (for [opt options-objects]
-        [:option {:value (:id opt) :selected (= (:id opt) (f o))} (:name opt)])]]))
 
 (defn add-host-page []
   (let [keypairs (db/get-keypairs)]

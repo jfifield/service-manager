@@ -1,8 +1,8 @@
 (ns service-manager.routes.keypairs
   (:require [compojure.core :refer :all]
-            [inflections.core :refer [titleize]]
             [ring.util.response :as response]
             [service-manager.views.layout :as layout]
+            [service-manager.views.form :refer :all]
             [service-manager.models.db :as db]
             [clj-ssh.ssh :as ssh]))
 
@@ -27,18 +27,6 @@
           [:form {:method "post" :action (str "/keypairs/" (:id keypair))}
            [:input {:type "hidden" :name "_method" :value "delete"}]
            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
-
-(defn text-field [f o]
-  (let [title (titleize (name f))]
-    [:div.form-group
-     [:label {:for f} title]
-     [:input.form-control {:type "text" :id f :name f :placeholder title :value (f o)}]]))
-
-(defn textarea-field [f o]
-  (let [title (titleize (name f))]
-    [:div.form-group
-     [:label {:for f} title]
-     [:textarea.form-control {:id f :name f :rows 10 :placeholder title} (f o)]]))
 
 (defn bytes->string [b]
   (apply str (map char b)))
