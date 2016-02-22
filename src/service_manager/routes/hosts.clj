@@ -28,10 +28,12 @@
            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
 
 (defn add-host-page []
-  (let [keypairs (db/get-keypairs)]
+  (let [environments (db/get-environments)
+        keypairs (db/get-keypairs)]
     (layout/common
       [:form {:method "post" :action "/hosts"}
        (map #(text-field % {}) [:name :address :username])
+       (select-field :environment_id {} environments {:title "Environment"})
        (select-field :keypair_id {} keypairs {:title "Key Pair"})
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
@@ -40,11 +42,13 @@
 
 (defn edit-host-page [id]
   (let [host (db/get-host id)
+        environments (db/get-environments)
         keypairs (db/get-keypairs)]
     (layout/common
       [:form {:method "post" :action (str "/hosts/" id)}
        [:input {:type "hidden" :name "_method" :value "put"}]
        (map #(text-field % host) [:name :address :username])
+       (select-field :environment_id host environments {:title "Environment"})
        (select-field :keypair_id host keypairs {:title "Key Pair"})
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
@@ -52,17 +56,18 @@
         [:span.glyphicon.glyphicon-remove " Cancel"]]])))
 
 (defn save-host [params]
-  (let [host (select-keys params [:name :address :username :keypair_id])]
+  (let [host (select-keys params [:name :address :username :environment_id :keypair_id])]
     (db/save-host host)
     (response/redirect "/hosts")))
 
 (defn update-host [id params]
-  (let [host (select-keys params [:name :address :username :keypair_id])]
+  (let [host (select-keys params [:name :address :username :environment_id :keypair_id])]
     (db/update-host id host)
     (response/redirect "/hosts")))
 
 (defn view-host [id]
   (let [host (db/get-host id)
+        environment (db/get-environment (:environment_id host))
         keypair (db/get-keypair (:keypair_id host))]
     (layout/common
       [:h1 (:name host)]
@@ -72,6 +77,9 @@
       [:div.row
        [:div.col-md-2 [:strong "Username"]]
        [:div.col-md-10 (:username host)]]
+      [:div.row
+       [:div.col-md-2 [:strong "Environment"]]
+       [:div.col-md-10 (:name environment)]]
       [:div.row
        [:div.col-md-2 [:strong "Key Pair"]]
        [:div.col-md-10 (:name keypair)]])))
