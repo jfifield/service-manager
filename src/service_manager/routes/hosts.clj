@@ -68,12 +68,11 @@
     (db/update-host id host)
     (response/redirect "/hosts")))
 
-(defn view-host [id]
+(defn view-host-summary [id]
   (let [host (db/get-host id)
         environment (db/get-environment (:environment_id host))
         keypair (db/get-keypair (:keypair_id host))]
-    (layout/common
-      :hosts
+    (list
       [:h1 (:name host)]
       [:div.row
        [:div.col-md-2 [:strong "Address"]]
@@ -88,9 +87,52 @@
        [:div.col-md-2 [:strong "Key Pair"]]
        [:div.col-md-10 (:name keypair)]])))
 
+(defn view-host-services [id]
+  (let [host-services (db/get-host-services id)
+        all-services (db/get-services)
+        services (remove #(contains? (set (map :id host-services)) (:id %)) all-services)]
+    (list
+      [:h2 "Services"]
+      [:div.pull-right {:style "margin-bottom: 10px;"}
+       [:form.form-inline {:method "post" :action(str "/hosts/" id "/services")}
+        [:div.form-group
+         [:label.sr-only {:for "service_id"} "Service"]
+         [:select.form-control {:id "service_id" :name "service_id"}
+          [:option]
+          (for [service services]
+            [:option {:value (:id service)} (:name service)])]]
+        "&nbsp;"
+        [:button.btn.btn-default {:type "submit"}
+         [:span.glyphicon.glyphicon-plus] " Add Service"]]]
+      [:table.table
+       [:tr
+        [:th "Name"]
+        [:th {:style "width: 1%;"}]]
+       (for [service host-services]
+         [:tr
+          [:td (:name service)]
+          [:td
+           [:form {:method "post" :action (str "/hosts/" id "/services/" (:id service))}
+            [:input {:type "hidden" :name "_method" :value "delete"}]
+            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
+
+(defn view-host [id]
+  (layout/common
+    :hosts
+    (view-host-summary id)
+    (view-host-services id)))
+
 (defn delete-host [id]
   (db/delete-host id)
   (response/redirect "/hosts"))
+
+(defn add-host-service [host-id service-id]
+  (db/add-host-service host-id service-id)
+  (response/redirect (str "/hosts/" host-id)))
+
+(defn remove-host-service [host-id service-id]
+  (db/remove-host-service host-id service-id)
+  (response/redirect (str "/hosts/" host-id)))
 
 (defroutes hosts-routes
   (context "/hosts" []
@@ -100,4 +142,6 @@
            (GET "/:id" [id] (view-host id))
            (GET "/:id/edit" [id] (edit-host-page id))
            (PUT "/:id" [id & params] (update-host id params))
-           (DELETE "/:id" [id] (delete-host id))))
+           (DELETE "/:id" [id] (delete-host id))
+           (POST "/:id/services" [id service_id] (add-host-service id service_id))
+           (DELETE "/:id/services/:service_id" [id service_id] (remove-host-service id service_id))))

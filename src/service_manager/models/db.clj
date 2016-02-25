@@ -19,13 +19,35 @@
          (defn ~(symbol (str "delete-" singular-entity)) [~'id]
            (delete ~entity (where {:id ~'id}))))))
 
-(defentity hosts)
+(declare hosts environments keypairs services)
+
+(defentity hosts
+  (many-to-many services :hosts_services {:lfk :host_id :rfk :service_id}))
+
 (defentity environments)
+
 (defentity keypairs)
-(defentity services)
+
+(defentity services
+  (many-to-many hosts :hosts_services {:lfk :service_id :rfk :host_id}))
 
 (defcrud hosts)
 (defcrud environments)
 (defcrud keypairs)
 (defcrud services)
 
+(defn get-host-services [host-id]
+  (-> (select hosts (with services) (where {:id host-id}))
+      first
+      :services))
+
+(defn get-service-hosts [service-id]
+  (-> (select services (with hosts) (where {:id service-id}))
+      first
+      :hosts))
+
+(defn add-host-service [host-id service-id]
+  (insert :hosts_services (values {:host_id host-id :service_id service-id})))
+
+(defn remove-host-service [host-id service-id]
+  (delete :hosts_services (where {:host_id host-id :service_id service-id})))
