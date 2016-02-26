@@ -24,7 +24,8 @@
 (defentity hosts
   (many-to-many services :hosts_services {:lfk :host_id :rfk :service_id}))
 
-(defentity environments)
+(defentity environments
+  (has-many hosts {:fk :environment_id}))
 
 (defentity keypairs)
 
@@ -51,3 +52,8 @@
 
 (defn remove-host-service [host-id service-id]
   (delete :hosts_services (where {:host_id host-id :service_id service-id})))
+
+(defn get-environment-hosts [id]
+  (-> (select environments (with hosts) (where {:id id}))
+      first
+      :hosts))

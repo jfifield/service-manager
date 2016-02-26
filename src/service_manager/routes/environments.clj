@@ -60,11 +60,26 @@
     (db/update-environment id environment)
     (response/redirect "/environments")))
 
-(defn view-environment [id]
+(defn view-environment-summary [id]
   (let [environment (db/get-environment id)]
-    (layout/common
-      :environments
-      [:h1 (:name environment)])))
+    [:h1 (:name environment)]))
+
+(defn view-environment-hosts [id]
+  (let [hosts (db/get-environment-hosts id)]
+    (list
+      [:h2 "Hosts"]
+      [:table.table
+       [:tr
+        [:th "Name"]]
+       (for [host hosts]
+         [:tr
+          [:td (:name host)]])])))
+
+(defn view-environment [id]
+  (layout/common
+    :environments
+    (view-environment-summary id)
+    (view-environment-hosts id)))
 
 (defn delete-environment [id]
   (db/delete-environment id)
