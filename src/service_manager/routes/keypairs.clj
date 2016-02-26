@@ -4,7 +4,7 @@
             [service-manager.views.layout :as layout]
             [service-manager.views.form :refer :all]
             [service-manager.models.db :as db]
-            [clj-ssh.ssh :as ssh]))
+            [service-manager.ssh :as ssh]))
 
 (defn list-keypairs-page []
   (let [keypairs (db/get-keypairs)]
@@ -29,17 +29,8 @@
             [:input {:type "hidden" :name "_method" :value "delete"}]
             [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
 
-(defn bytes->string [b]
-  (apply str (map char b)))
-
-(defn generate-keypair []
-  (let [a (ssh/ssh-agent {})
-        keypair-bytes (ssh/generate-keypair a :rsa 2048 "")
-        keypair (map bytes->string keypair-bytes)]
-    {:private_key (first keypair) :public_key (last keypair)}))
-
 (defn add-keypair-page []
-  (let [keypair (generate-keypair)]
+  (let [keypair (ssh/generate-ssh-keypair)]
     (layout/common
       :keypairs
       [:form {:method "post" :action "/keypairs"}
