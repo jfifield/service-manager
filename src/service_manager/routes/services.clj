@@ -79,7 +79,7 @@
         all-hosts (db/get-hosts)
         hosts (remove #(contains? (set (map :id service-hosts)) (:id %)) all-hosts)]
     (list
-      [:h2 "Services"]
+      [:h2 "Hosts"]
       [:div.pull-right {:style "margin-bottom: 10px;"}
        [:form.form-inline {:method "post" :action(str "/services/" id "/hosts")}
         [:div.form-group
@@ -101,8 +101,7 @@
           [:td
            [:form {:method "post" :action (str "/services/" id "/hosts/" (:id host))}
             [:input {:type "hidden" :name "_method" :value "delete"}]
-            [:button.btn.btn-default {:type "submit"} "Delete"]]]])]
-      )))
+            [:button.btn.btn-default {:type "submit"} "Delete"]]]])])))
 
 (defn view-service [id]
   (layout/common
