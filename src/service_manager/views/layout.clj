@@ -33,4 +33,5 @@
      (nav-bar active-nav-item)
      [:div.container body]
      (include-js "/assets/jquery/jquery.min.js")
-     (include-js "/assets/bootstrap/js/bootstrap.min.js")]))
+     (include-js "/assets/bootstrap/js/bootstrap.min.js")
+     (include-js "/js/main.js")]))
