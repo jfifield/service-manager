@@ -70,6 +70,15 @@
     (db/update-host id host)
     (response/redirect "/hosts")))
 
+(defn success-status [message]
+  [:span.text-success [:span.glyphicon.glyphicon-ok-sign] " " message])
+
+(defn warning-status [message]
+  [:span.text-warning [:span.glyphicon.glyphicon-question-sign] " " message])
+
+(defn error-status [message]
+  [:span.text-danger [:span.glyphicon.glyphicon-remove-sign] " " message])
+
 (defn view-host-summary [id]
   (let [host (db/get-host id)
         environment (db/get-environment (:environment_id host))
@@ -79,7 +88,7 @@
       [:div.row
        [:div.col-md-2 [:strong "Status"]]
        [:div.col-md-10.host-status {:data-host-id id}
-        [:span.text-warning [:span.glyphicon.glyphicon-question-sign] " Checking..."]]]
+        (warning-status "Checking...")]]
       [:div.row
        [:div.col-md-2 [:strong "Address"]]
        [:div.col-md-10 (:address host)]]
@@ -112,11 +121,13 @@
          [:span.glyphicon.glyphicon-plus] " Add Service"]]]
       [:table.table
        [:tr
-        [:th "Name"]
+        (map #(vector :th %) ["Name" "Status"])
         [:th {:style "width: 1%;"}]]
        (for [service host-services]
          [:tr
           [:td (:name service)]
+          [:td.host-service-status {:data-host-id id :data-service-id (:id service)}
+           (warning-status "Checking...")]
           [:td
            [:form {:method "post" :action (str "/hosts/" id "/services/" (:id service))}
             [:input {:type "hidden" :name "_method" :value "delete"}]
@@ -132,21 +143,37 @@
   (db/delete-host id)
   (response/redirect "/hosts"))
 
+(defn ssh-exception-status [e]
+  (error-status
+    (if-let [cause (.getCause e)]
+      (condp instance? cause
+        java.net.UnknownHostException "Unknown host"
+        java.net.NoRouteToHostException "No route to host"
+        (.getMessage cause))
+      (.getMessage e))))
+
 (defn get-host-status [id]
   (let [host (db/get-host id)
         keypair (db/get-keypair (:keypair_id host))]
     (html
       (try
         (let [result (ssh/exec-ssh-cmd host keypair "echo \"OK\"")]
-          [:span.text-success [:span.glyphicon.glyphicon-ok-sign] " " (:out result)])
+          (success-status (:out result)))
         (catch com.jcraft.jsch.JSchException e
-          [:span.text-danger [:span.glyphicon.glyphicon-remove-sign] " "
-           (if-let [cause (.getCause e)]
-             (condp instance? cause
-               java.net.UnknownHostException "Unknown host"
-               java.net.NoRouteToHostException "No route to host"
-               (.getMessage cause))
-             (.getMessage e))])))))
+          (ssh-exception-status e))))))
+
+(defn get-host-service-status [host-id service-id]
+  (let [host (db/get-host host-id)
+        keypair (db/get-keypair (:keypair_id host))
+        service (db/get-service service-id)]
+    (html
+      (try
+        (let [result (ssh/exec-ssh-cmd host keypair (:status_command service))]
+          (if (= 0 (:exit result))
+            (success-status (:out result))
+            (error-status (str (:out result) (:err result)))))
+        (catch com.jcraft.jsch.JSchException e
+          (ssh-exception-status e))))))
 
 (defn add-host-service [host-id service-id]
   (db/add-host-service host-id service-id)
@@ -167,4 +194,5 @@
            (DELETE "/:id" [id] (delete-host id))
            (GET "/:id/status" [id] (get-host-status id))
            (POST "/:id/services" [id service_id] (add-host-service id service_id))
-           (DELETE "/:id/services/:service_id" [id service_id] (remove-host-service id service_id))))
+           (DELETE "/:id/services/:service_id" [id service_id] (remove-host-service id service_id))
+           (GET "/:id/services/:service_id/status" [id service_id] (get-host-service-status id service_id))))
