@@ -4,6 +4,7 @@
             [hiccup.core :refer [html]]
             [service-manager.views.layout :as layout]
             [service-manager.views.form :refer :all]
+            [service-manager.views.status :refer :all]
             [service-manager.models.db :as db]
             [service-manager.ssh :as ssh]))
 
@@ -70,15 +71,6 @@
     (db/update-host id host)
     (response/redirect "/hosts")))
 
-(defn success-status [message]
-  [:span.text-success [:span.glyphicon.glyphicon-ok-sign] " " message])
-
-(defn warning-status [message]
-  [:span.text-warning [:span.glyphicon.glyphicon-question-sign] " " message])
-
-(defn error-status [message]
-  [:span.text-danger [:span.glyphicon.glyphicon-remove-sign] " " message])
-
 (defn view-host-summary [id]
   (let [host (db/get-host id)
         environment (db/get-environment (:environment_id host))
@@ -87,8 +79,7 @@
       [:h1 (:name host)]
       [:div.row
        [:div.col-md-2 [:strong "Status"]]
-       [:div.col-md-10.host-status {:data-host-id id}
-        (warning-status "Checking...")]]
+       (host-status :div.col-md-10 id)]
       [:div.row
        [:div.col-md-2 [:strong "Address"]]
        [:div.col-md-10 (:address host)]]
@@ -126,8 +117,7 @@
        (for [service host-services]
          [:tr
           [:td (:name service)]
-          [:td.host-service-status {:data-host-id id :data-service-id (:id service)}
-           (warning-status "Checking...")]
+          (host-service-status :td id (:id service))
           [:td
            [:form {:method "post" :action (str "/hosts/" id "/services/" (:id service))}
             [:input {:type "hidden" :name "_method" :value "delete"}]
@@ -142,15 +132,6 @@
 (defn delete-host [id]
   (db/delete-host id)
   (response/redirect "/hosts"))
-
-(defn ssh-exception-status [e]
-  (error-status
-    (if-let [cause (.getCause e)]
-      (condp instance? cause
-        java.net.UnknownHostException "Unknown host"
-        java.net.NoRouteToHostException "No route to host"
-        (.getMessage cause))
-      (.getMessage e))))
 
 (defn get-host-status [id]
   (let [host (db/get-host id)
