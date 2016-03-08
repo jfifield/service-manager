@@ -3,6 +3,7 @@
             [ring.util.response :as response]
             [service-manager.views.layout :as layout]
             [service-manager.views.form :refer :all]
+            [service-manager.views.status :refer [host-status]]
             [service-manager.models.db :as db]))
 
 (defn list-environments-page []
@@ -70,10 +71,11 @@
       [:h2 "Hosts"]
       [:table.table
        [:tr
-        [:th "Name"]]
+        (map #(vector :th %) ["Name" "Status"])]
        (for [host hosts]
          [:tr
-          [:td (:name host)]])])))
+          [:td (:name host)]
+          (host-status :td (:id host))])])))
 
 (defn view-environment [id]
   (layout/common

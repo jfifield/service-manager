@@ -3,6 +3,7 @@
             [ring.util.response :as response]
             [service-manager.views.layout :as layout]
             [service-manager.views.form :refer :all]
+            [service-manager.views.status :refer [host-service-status]]
             [service-manager.models.db :as db]))
 
 (defn list-services-page []
@@ -93,11 +94,12 @@
          [:span.glyphicon.glyphicon-plus] " Add Host"]]]
       [:table.table
        [:tr
-        [:th "Name"]
+        (map #(vector :th %) ["Name" "Status"])
         [:th {:style "width: 1%;"}]]
        (for [host service-hosts]
          [:tr
           [:td (:name host)]
+          (host-service-status :td (:id host) id)
           [:td
            [:form {:method "post" :action (str "/services/" id "/hosts/" (:id host))}
             [:input {:type "hidden" :name "_method" :value "delete"}]

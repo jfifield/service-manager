@@ -17,11 +17,12 @@
         [:span.glyphicon.glyphicon-plus] " Add Host"]]
       [:table.table
        [:tr
-        (map #(vector :th %) ["Name" "Address" "Username"])
+        (map #(vector :th %) ["Name" "Address" "Username" "Status"])
         (repeat 3 [:th {:style "width: 1%;"}])]
        (for [host hosts]
          [:tr
           (map #(vector :td (% host)) [:name :address :username])
+          (host-status :td (:id host))
           [:td
            [:a.btn.btn-default {:href (str "/hosts/" (:id host))} "View"]]
           [:td
