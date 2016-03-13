@@ -114,11 +114,15 @@
       [:table.table
        [:tr
         (map #(vector :th %) ["Name" "Status"])
-        [:th {:style "width: 1%;"}]]
+        (repeat 3 [:th {:style "width: 1%;"}])]
        (for [service host-services]
          [:tr
           [:td (:name service)]
           (host-service-status :td id (:id service))
+          [:td
+           [:button.btn.btn-default.host-service-start {:data-host-id id :data-service-id (:id service)} "Start"]]
+          [:td
+           [:button.btn.btn-default.host-service-stop {:data-host-id id :data-service-id (:id service)} "Stop"]]
           [:td
            [:form {:method "post" :action (str "/hosts/" id "/services/" (:id service))}
             [:input {:type "hidden" :name "_method" :value "delete"}]
@@ -137,25 +141,40 @@
 (defn get-host-status [id]
   (let [host (db/get-host id)
         keypair (db/get-keypair (:keypair_id host))]
-    (html
-      (try
-        (let [result (ssh/exec-ssh-cmd host keypair "echo \"OK\"")]
-          (success-status (:out result)))
-        (catch com.jcraft.jsch.JSchException e
-          (ssh-exception-status e))))))
+    (try
+      (let [result (ssh/exec-ssh-cmd host keypair "echo \"OK\"")]
+        (success-status (:out result)))
+      (catch com.jcraft.jsch.JSchException e
+        (ssh-exception-status e)))))
 
 (defn get-host-service-status [host-id service-id]
   (let [host (db/get-host host-id)
         keypair (db/get-keypair (:keypair_id host))
         service (db/get-service service-id)]
-    (html
-      (try
-        (let [result (ssh/exec-ssh-cmd host keypair (:status_command service))]
-          (if (= 0 (:exit result))
-            (success-status (:out result))
-            (error-status (str (:out result) (:err result)))))
-        (catch com.jcraft.jsch.JSchException e
-          (ssh-exception-status e))))))
+    (try
+      (let [result (ssh/exec-ssh-cmd host keypair (:status_command service))]
+        (ssh-cmd-result-status result))
+      (catch com.jcraft.jsch.JSchException e
+        (ssh-exception-status e)))))
+
+(defn start-stop-host-service [host-id service-id action]
+  (let [host (db/get-host host-id)
+        keypair (db/get-keypair (:keypair_id host))
+        service (db/get-service service-id)]
+    (try
+      (let [result (ssh/exec-ssh-cmd host keypair (action service))
+            status (get-host-service-status host-id service-id)]
+        (multi-status
+          (ssh-cmd-result-status result)
+          status))
+      (catch com.jcraft.jsch.JSchException e
+        (ssh-exception-status e)))))
+
+(defn start-host-service [host-id service-id]
+  (start-stop-host-service host-id service-id :start_command))
+
+(defn stop-host-service [host-id service-id]
+  (start-stop-host-service host-id service-id :stop_command))
 
 (defn add-host-service [host-id service-id]
   (db/add-host-service host-id service-id)
@@ -174,7 +193,9 @@
            (GET "/:id/edit" [id] (edit-host-page id))
            (PUT "/:id" [id & params] (update-host id params))
            (DELETE "/:id" [id] (delete-host id))
-           (GET "/:id/status" [id] (get-host-status id))
+           (GET "/:id/status" [id] (html (get-host-status id)))
            (POST "/:id/services" [id service_id] (add-host-service id service_id))
            (DELETE "/:id/services/:service_id" [id service_id] (remove-host-service id service_id))
-           (GET "/:id/services/:service_id/status" [id service_id] (get-host-service-status id service_id))))
+           (GET "/:id/services/:service_id/status" [id service_id] (html (get-host-service-status id service_id)))
+           (POST "/:id/services/:service_id/start" [id service_id] (html (start-host-service id service_id)))
+           (POST "/:id/services/:service_id/stop" [id service_id] (html (stop-host-service id service_id)))))

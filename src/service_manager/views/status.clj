@@ -19,6 +19,11 @@
    {:class "host-service-status" :data-host-id host-id :data-service-id service-id}
    (warning-status "Checking...")])
 
+(defn ssh-cmd-result-status [result]
+  (if (= 0 (:exit result))
+    (success-status (:out result))
+    (error-status (str (:out result) (:err result)))))
+
 (defn ssh-exception-status [e]
   (error-status
     (if-let [cause (.getCause e)]
@@ -27,3 +32,6 @@
         java.net.NoRouteToHostException "No route to host"
         (.getMessage cause))
       (.getMessage e))))
+
+(defn multi-status [& statuses]
+  (interpose [:br] (distinct statuses)))
