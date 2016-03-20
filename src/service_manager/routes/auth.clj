@@ -1,7 +1,8 @@
 (ns service-manager.routes.auth
   (:require [compojure.core :refer :all]
             [ring.util.response :refer [redirect]]
-            [service-manager.views.layout :as layout]))
+            [service-manager.views.layout :as layout]
+            [service-manager.models.db :as db]))
 
 (defn login-form [error]
   (layout/basic
@@ -22,7 +23,7 @@
 (defn login [request]
   (let [username (get-in request [:form-params "username"])
         password (get-in request [:form-params "password"])]
-    (if (= username password "admin")
+    (if (db/authenticate-user username password)
       (let [session (:session request)
             updated-session (assoc session :identity (keyword username))]
         (-> (redirect "/")

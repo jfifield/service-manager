@@ -13,6 +13,7 @@
             [buddy.auth.accessrules :refer [wrap-access-rules]]
             [service-manager.routes.auth :refer [auth-routes]]
             [service-manager.routes.home :refer [home-routes]]
+            [service-manager.routes.users :refer [users-routes]]
             [service-manager.routes.hosts :refer [hosts-routes]]
             [service-manager.routes.environments :refer [environments-routes]]
             [service-manager.routes.keypairs :refer [keypairs-routes]]
@@ -38,6 +39,7 @@
         auth-routes
         home-routes
         hosts-routes
+        users-routes
         environments-routes
         keypairs-routes
         services-routes

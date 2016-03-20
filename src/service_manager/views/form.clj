@@ -7,6 +7,12 @@
      [:label {:for field-name} title]
      [:input.form-control {:type "text" :id field-name :name field-name :placeholder title :value (field-name entity)}]]))
 
+(defn password-field [field-name]
+  (let [title (titleize (name field-name))]
+    [:div.form-group
+     [:label {:for field-name} title]
+     [:input.form-control {:type "password" :id field-name :name field-name :placeholder title}]]))
+
 (defn textarea-field [field-name entity]
   (let [title (titleize (name field-name))]
     [:div.form-group

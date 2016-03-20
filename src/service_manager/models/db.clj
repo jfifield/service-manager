@@ -1,7 +1,9 @@
 (ns service-manager.models.db
   (:require [korma.core :refer :all]
             [korma.db :refer [defdb]]
-            [inflections.core :refer :all]))
+            [inflections.core :refer :all]
+            [clojure.string :refer [blank?]]
+            [buddy.hashers :as hashers]))
 
 (defdb db "sqlite:service-manager.db")
 
@@ -19,7 +21,9 @@
          (defn ~(symbol (str "delete-" singular-entity)) [~'id]
            (delete ~entity (where {:id ~'id}))))))
 
-(declare hosts environments keypairs services)
+(declare users hosts environments keypairs services)
+
+(defentity users)
 
 (defentity hosts
   (many-to-many services :hosts_services {:lfk :host_id :rfk :service_id}))
@@ -33,9 +37,29 @@
   (many-to-many hosts :hosts_services {:lfk :service_id :rfk :host_id}))
 
 (defcrud hosts)
+(defcrud users)
 (defcrud environments)
 (defcrud keypairs)
 (defcrud services)
+
+(defn authenticate-user [username password]
+  (if-let [user (first (select users (where {:username username})))]
+    (if (hashers/check password (:password user))
+      user)))
+
+(def save-user-internal save-user)
+
+(defn save-user [user]
+  (let [updated-user (assoc user :password (hashers/encrypt (:password user)))]
+    (save-user-internal updated-user)))
+
+(def update-user-internal update-user)
+
+(defn update-user [id user]
+  (let [updated-user (if (blank? (:password user))
+                       (dissoc user :password)
+                       (assoc user :password (hashers/encrypt (:password user))))]
+    (update-user-internal id updated-user)))
 
 (defn get-host-services [host-id]
   (-> (select hosts (with services) (where {:id host-id}))
