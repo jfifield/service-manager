@@ -13,7 +13,8 @@
                  [org.xerial/sqlite-jdbc "3.8.11.2"]
                  [korma "0.4.2"]
                  [inflections "0.10.0"]
-                 [clj-ssh "0.5.11"]]
+                 [clj-ssh "0.5.11"]
+                 [buddy "0.10.0"]]
   :plugins [[lein-ring "0.8.12"]
             [migratus-lein "0.2.1"]]
   :ring {:handler service-manager.handler/app

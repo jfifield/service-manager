@@ -16,14 +16,17 @@
       [:span.sr-only "Toggle navigation"]
       (repeat 3 [:span.icon-bar])]
      [:a.navbar-brand {:href "/"} "Service Manager"]]
-    [:div#navbar.collapse.navbar-collapse
-     [:ul.nav.navbar-nav
-      (map (fn [nav-item]
-             [:li (if (= (:id nav-item) active-nav-item) {:class "active"})
-              [:a {:href (:href nav-item)} (:title nav-item)]])
-           nav-items)]]]])
+    (if active-nav-item
+      [:div#navbar.collapse.navbar-collapse
+       [:ul.nav.navbar-nav
+        (map (fn [nav-item]
+               [:li (if (= (:id nav-item) active-nav-item) {:class "active"})
+                [:a {:href (:href nav-item)} (:title nav-item)]])
+             nav-items)]
+       [:ul.nav.navbar-nav.navbar-right
+        [:li [:a {:href "/logout"} "Logout"]]]])]])
 
-(defn common [active-nav-item & body]
+(defn layout [active-nav-item body]
   (html5
     [:head
      [:title "Service Manager"]
@@ -35,3 +38,9 @@
      (include-js "/assets/jquery/jquery.min.js")
      (include-js "/assets/bootstrap/js/bootstrap.min.js")
      (include-js "/js/main.js")]))
+
+(defn common [active-nav-item & body]
+  (layout active-nav-item body))
+
+(defn basic [& body]
+  (layout nil body))
