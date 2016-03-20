@@ -37,7 +37,7 @@
      [:button.btn.btn-default {:type "submit"}
       [:span.glyphicon.glyphicon-ok] " Save"]
      [:a.btn.btn-default {:href "/environments"}
-      [:span.glyphicon.glyphicon-remove " Cancel"]]]))
+      [:span.glyphicon.glyphicon-remove] " Cancel"]]))
 
 (defn edit-environment-page [id]
   (let [environment (db/get-environment id)]
@@ -49,7 +49,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/environments"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn save-environment [params]
   (let [environment (select-keys params [:name])]

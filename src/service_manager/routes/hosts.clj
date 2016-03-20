@@ -44,7 +44,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/hosts"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn edit-host-page [id]
   (let [host (db/get-host id)
@@ -60,7 +60,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/hosts"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn save-host [params]
   (let [host (select-keys params [:name :address :username :environment_id :keypair_id])]

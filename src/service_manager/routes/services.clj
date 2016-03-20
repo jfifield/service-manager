@@ -37,7 +37,7 @@
      [:button.btn.btn-default {:type "submit"}
       [:span.glyphicon.glyphicon-ok] " Save"]
      [:a.btn.btn-default {:href "/services"}
-      [:span.glyphicon.glyphicon-remove " Cancel"]]]))
+      [:span.glyphicon.glyphicon-remove] " Cancel"]]))
 
 (defn edit-service-page [id]
   (let [service (db/get-service id)]
@@ -49,7 +49,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/services"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn save-service [params]
   (let [service (select-keys params [:name :start_command :stop_command :status_command])]

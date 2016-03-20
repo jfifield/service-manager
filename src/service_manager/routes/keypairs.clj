@@ -40,7 +40,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/keypairs"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn edit-keypair-page [id]
   (let [keypair (db/get-keypair id)]
@@ -54,7 +54,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/keypairs"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn save-keypair [params]
   (let [keypair (select-keys params [:name :private_key :public_key])]

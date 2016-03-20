@@ -37,7 +37,7 @@
      [:button.btn.btn-default {:type "submit"}
       [:span.glyphicon.glyphicon-ok] " Save"]
      [:a.btn.btn-default {:href "/users"}
-      [:span.glyphicon.glyphicon-remove " Cancel"]]]))
+      [:span.glyphicon.glyphicon-remove] " Cancel"]]))
 
 (defn edit-user-page [id]
   (let [user (db/get-user id)]
@@ -50,7 +50,7 @@
        [:button.btn.btn-default {:type "submit"}
         [:span.glyphicon.glyphicon-ok] " Save"]
        [:a.btn.btn-default {:href "/users"}
-        [:span.glyphicon.glyphicon-remove " Cancel"]]])))
+        [:span.glyphicon.glyphicon-remove] " Cancel"]])))
 
 (defn save-user [params]
   (let [user (select-keys params [:username :password])]
