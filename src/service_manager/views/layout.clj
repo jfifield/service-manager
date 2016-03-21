@@ -6,9 +6,7 @@
   [{:id :home :href "/" :title "Home"}
    {:id :hosts :href "/hosts" :title "Hosts"}
    {:id :environments :href "/environments" :title "Environments"}
-   {:id :keypairs :href "/keypairs" :title "Key Pairs"}
-   {:id :services :href "/services" :title "Services"}
-   {:id :users :href "/users" :title "Users"}])
+   {:id :services :href "/services" :title "Services"}])
 
 (defn nav-bar [active-nav-item]
   [:nav.navbar.navbar-default.navbar-fixed-top
@@ -26,6 +24,12 @@
                 [:a {:href (:href nav-item)} (:title nav-item)]])
              nav-items)]
        [:ul.nav.navbar-nav.navbar-right
+        [:li.dropdown
+         [:a.dropdown-toggle {:href "#" :data-toggle "dropdown"}
+          [:span.glyphicon.glyphicon-cog] " " [:span.caret]]
+         [:ul.dropdown-menu
+          [:li [:a {:href "/users"} "Users"]]
+          [:li [:a {:href "/keypairs"} "Key Pairs"]]]]
         [:li.dropdown
          [:a.dropdown-toggle {:href "#" :data-toggle "dropdown"}
           [:span.glyphicon.glyphicon-user] " " (:identity *request*) " " [:span.caret]]
