@@ -1,5 +1,6 @@
 (ns service-manager.views.layout
-  (:require [hiccup.page :refer [html5 include-css include-js]]))
+  (:require [hiccup.page :refer [html5 include-css include-js]]
+            [service-manager.request :refer [*request*]]))
 
 (def nav-items
   [{:id :home :href "/" :title "Home"}
@@ -25,7 +26,11 @@
                 [:a {:href (:href nav-item)} (:title nav-item)]])
              nav-items)]
        [:ul.nav.navbar-nav.navbar-right
-        [:li [:a {:href "/logout"} "Logout"]]]])]])
+        [:li.dropdown
+         [:a.dropdown-toggle {:href "#" :data-toggle "dropdown"}
+          [:span.glyphicon.glyphicon-user] " " (:identity *request*) " " [:span.caret]]
+         [:ul.dropdown-menu
+          [:li [:a {:href "/logout"} "Logout"]]]]]])]])
 
 (defn layout [active-nav-item body]
   (html5

@@ -11,6 +11,7 @@
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [buddy.auth.accessrules :refer [wrap-access-rules]]
+            [service-manager.request :refer [wrap-request-binding]]
             [service-manager.routes.auth :refer [auth-routes]]
             [service-manager.routes.home :refer [home-routes]]
             [service-manager.routes.users :refer [users-routes]]
@@ -44,6 +45,7 @@
         keypairs-routes
         services-routes
         app-routes)
+      (wrap-request-binding)
       (wrap-access-rules access-rules)
       (wrap-authentication (session-backend))
       (handler/site)
