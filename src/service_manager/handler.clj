@@ -1,5 +1,6 @@
 (ns service-manager.handler
   (:require [compojure.core :refer [defroutes routes]]
+            [clojure.tools.logging :as log]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.file-info :refer [wrap-file-info]]
             [ring.middleware.webjars :refer [wrap-webjars]]
@@ -21,10 +22,10 @@
             [service-manager.routes.services :refer [services-routes]]))
 
 (defn init []
-  (println "service-manager is starting"))
+  (log/info "service-manager is starting"))
 
 (defn destroy []
-  (println "service-manager is shutting down"))
+  (log/info "service-manager is shutting down"))
 
 (defroutes app-routes
   (route/resources "/")
