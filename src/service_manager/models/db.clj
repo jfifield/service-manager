@@ -5,7 +5,8 @@
             [clojure.string :refer [blank?]]
             [clojure.tools.logging :as log]
             [buddy.hashers :as hashers]
-            [migratus.core :as migratus]))
+            [migratus.core :as migratus]
+            [service-manager.ssh :refer [generate-ssh-keypair]]))
 
 (def db-url "sqlite:service-manager.db")
 (defdb db db-url)
@@ -92,6 +93,9 @@
 (defn init []
   (migratus/migrate {:store :database :db db-url})
   (if (= (get-user-count) 0)
-    (do
-      (log/info "Adding default admin user")
-      (save-user {:username "admin" :password "admin"}))))
+    (do (log/info "Adding default admin user")
+        (save-user {:username "admin" :password "admin"})))
+  (if (= (get-keypair-count) 0)
+    (do (log/info "Adding default keypair")
+        (save-keypair
+          (assoc (generate-ssh-keypair) :name "default")))))
