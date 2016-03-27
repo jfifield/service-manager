@@ -12,6 +12,7 @@
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [buddy.auth.accessrules :refer [wrap-access-rules]]
+            [service-manager.models.db :as db]
             [service-manager.request :refer [wrap-request-binding]]
             [service-manager.routes.auth :refer [auth-routes]]
             [service-manager.routes.home :refer [home-routes]]
@@ -22,7 +23,8 @@
             [service-manager.routes.services :refer [services-routes]]))
 
 (defn init []
-  (log/info "service-manager is starting"))
+  (log/info "service-manager is starting")
+  (db/init))
 
 (defn destroy []
   (log/info "service-manager is shutting down"))

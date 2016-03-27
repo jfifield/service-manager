@@ -3,9 +3,11 @@
             [korma.db :refer [defdb]]
             [inflections.core :refer :all]
             [clojure.string :refer [blank?]]
-            [buddy.hashers :as hashers]))
+            [buddy.hashers :as hashers]
+            [migratus.core :as migratus]))
 
-(defdb db "sqlite:service-manager.db")
+(def db-url "sqlite:service-manager.db")
+(defdb db db-url)
 
 (defmacro defcrud [entity]
   (let [singular-entity (singular (name entity))
@@ -81,3 +83,6 @@
   (-> (select environments (with hosts) (where {:id id}))
       first
       :hosts))
+
+(defn init []
+  (migratus/migrate {:store :database :db db-url}))
