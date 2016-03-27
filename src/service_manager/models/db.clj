@@ -52,19 +52,21 @@
     (if (hashers/check password (:password user))
       user)))
 
-(def save-user-internal save-user)
+(alter-var-root
+  #'save-user
+  (fn [original-fn]
+    (fn [user]
+      (let [updated-user (assoc user :password (hashers/encrypt (:password user)))]
+        (original-fn updated-user)))))
 
-(defn save-user [user]
-  (let [updated-user (assoc user :password (hashers/encrypt (:password user)))]
-    (save-user-internal updated-user)))
-
-(def update-user-internal update-user)
-
-(defn update-user [id user]
-  (let [updated-user (if (blank? (:password user))
-                       (dissoc user :password)
-                       (assoc user :password (hashers/encrypt (:password user))))]
-    (update-user-internal id updated-user)))
+(alter-var-root
+  #'update-user
+  (fn [original-fn]
+    (fn [id user]
+      (let [updated-user (if (blank? (:password user))
+                           (dissoc user :password)
+                           (assoc user :password (hashers/encrypt (:password user))))]
+        (original-fn id updated-user)))))
 
 (defn get-host-services [host-id]
   (-> (select hosts (with services) (where {:id host-id}))
