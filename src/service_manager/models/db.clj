@@ -3,6 +3,7 @@
             [korma.db :refer [defdb]]
             [inflections.core :refer :all]
             [clojure.string :refer [blank?]]
+            [clojure.tools.logging :as log]
             [buddy.hashers :as hashers]
             [migratus.core :as migratus]))
 
@@ -16,6 +17,8 @@
            (select ~entity))
          (defn ~(symbol (str "get-" singular-entity)) [~'id]
            (first (select ~entity (where {:id ~'id}))))
+         (defn ~(symbol (str "get-" singular-entity "-count")) []
+           (:c (first (select ~entity (aggregate (~'count :id) :c)))))
          (defn ~(symbol (str "save-" singular-entity)) [~(symbol singular-entity)]
            (insert ~entity (values ~(symbol singular-entity))))
          (defn ~(symbol (str "update-" singular-entity)) [~'id ~(symbol singular-entity)]
@@ -85,4 +88,8 @@
       :hosts))
 
 (defn init []
-  (migratus/migrate {:store :database :db db-url}))
+  (migratus/migrate {:store :database :db db-url})
+  (if (= (get-user-count) 0)
+    (do
+      (log/info "Adding default admin user")
+      (save-user {:username "admin" :password "admin"}))))
