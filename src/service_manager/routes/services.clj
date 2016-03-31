@@ -95,11 +95,15 @@
       [:table.table
        [:tr
         (map #(vector :th %) ["Name" "Status"])
-        [:th {:style "width: 1%;"}]]
+        (repeat 3 [:th {:style "width: 1%;"}])]
        (for [host service-hosts]
          [:tr
           [:td (:name host)]
           (host-service-status :td (:id host) id)
+          [:td
+           [:button.btn.btn-default.host-service-start {:data-host-id (:id host) :data-service-id id} "Start"]]
+          [:td
+           [:button.btn.btn-default.host-service-stop {:data-host-id (:id host) :data-service-id id} "Stop"]]
           [:td
            [:form {:method "post" :action (str "/services/" id "/hosts/" (:id host))}
             [:input {:type "hidden" :name "_method" :value "delete"}]
