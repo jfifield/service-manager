@@ -80,18 +80,21 @@
         all-hosts (db/get-hosts)
         hosts (remove #(contains? (set (map :id service-hosts)) (:id %)) all-hosts)]
     (list
-      [:h2 "Hosts"]
-      [:div.pull-right {:style "margin-bottom: 10px;"}
-       [:form.form-inline {:method "post" :action(str "/services/" id "/hosts")}
-        [:div.form-group
-         [:label.sr-only {:for "host_id"} "Host"]
-         [:select.form-control {:id "host_id" :name "host_id"}
-          [:option]
-          (for [host hosts]
-            [:option {:value (:id host)} (:name host)])]]
-        "&nbsp;"
-        [:button.btn.btn-default {:type "submit"}
-         [:span.glyphicon.glyphicon-plus] " Add Host"]]]
+      [:div.row.buffer-top
+       [:div.col-md-6
+        [:h4 "Hosts"]]
+       [:div.col-md-6
+        [:div.pull-right {:style "margin-bottom: 10px;"}
+         [:form.form-inline {:method "post" :action(str "/services/" id "/hosts")}
+          [:div.form-group
+           [:label.sr-only {:for "host_id"} "Host"]
+           [:select.form-control {:id "host_id" :name "host_id"}
+            [:option]
+            (for [host hosts]
+              [:option {:value (:id host)} (:name host)])]]
+          "&nbsp;"
+          [:button.btn.btn-default {:type "submit"}
+           [:span.glyphicon.glyphicon-plus] " Add Host"]]]]]
       [:table.table
        [:tr
         (map #(vector :th %) ["Name" "Status"])

@@ -99,18 +99,21 @@
         all-services (db/get-services)
         services (remove #(contains? (set (map :id host-services)) (:id %)) all-services)]
     (list
-      [:h2 "Services"]
-      [:div.pull-right {:style "margin-bottom: 10px;"}
-       [:form.form-inline {:method "post" :action(str "/hosts/" id "/services")}
-        [:div.form-group
-         [:label.sr-only {:for "service_id"} "Service"]
-         [:select.form-control {:id "service_id" :name "service_id"}
-          [:option]
-          (for [service services]
-            [:option {:value (:id service)} (:name service)])]]
-        "&nbsp;"
-        [:button.btn.btn-default {:type "submit"}
-         [:span.glyphicon.glyphicon-plus] " Add Service"]]]
+      [:div.row.buffer-top
+       [:div.col-md-6
+        [:h4 "Services"]]
+       [:div.col-md-6
+        [:div.pull-right
+         [:form.form-inline {:method "post" :action(str "/hosts/" id "/services")}
+          [:div.form-group
+           [:label.sr-only {:for "service_id"} "Service"]
+           [:select.form-control {:id "service_id" :name "service_id"}
+            [:option]
+            (for [service services]
+              [:option {:value (:id service)} (:name service)])]]
+          "&nbsp;"
+          [:button.btn.btn-default {:type "submit"}
+           [:span.glyphicon.glyphicon-plus] " Add Service"]]]]]
       [:table.table
        [:tr
         (map #(vector :th %) ["Name" "Status"])
