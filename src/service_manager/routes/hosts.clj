@@ -96,25 +96,24 @@
        [:div.col-md-10 (:name keypair)]])))
 
 (defn view-host-services [id]
-  (let [host-services (db/get-host-services id)
-        all-services (db/get-services)
-        services (difference (set all-services) (set host-services))]
+  (let [host-services (db/get-host-services id)]
     (list
       [:div.row.buffer-top
        [:div.col-md-6
         [:h4 "Services"]]
        [:div.col-md-6
-        [:div.pull-right
-         [:form.form-inline {:method "post" :action(str "/hosts/" id "/services")}
-          [:div.form-group
-           [:label.sr-only {:for "service_id"} "Service"]
-           [:select.form-control {:id "service_id" :name "service_id"}
-            [:option]
-            (for [service services]
-              [:option {:value (:id service)} (:name service)])]]
-          "&nbsp;"
-          [:button.btn.btn-default {:type "submit"}
-           [:span.glyphicon.glyphicon-plus] " Add Service"]]]]]
+        (when-let [services (not-empty (difference (set (db/get-services)) (set host-services)))]
+          [:div.pull-right
+           [:form.form-inline {:method "post" :action(str "/hosts/" id "/services")}
+            [:div.form-group
+             [:label.sr-only {:for "service_id"} "Service"]
+             [:select.form-control {:id "service_id" :name "service_id"}
+              [:option]
+              (for [service services]
+                [:option {:value (:id service)} (:name service)])]]
+            "&nbsp;"
+            [:button.btn.btn-default {:type "submit"}
+             [:span.glyphicon.glyphicon-plus] " Add Service"]]])]]
       [:table.table
        [:tr
         (map #(vector :th %) ["Name" "Status"])

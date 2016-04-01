@@ -77,25 +77,24 @@
        [:div.col-md-10 (:status_command service)]])))
 
 (defn view-service-hosts [id]
-  (let [service-hosts (db/get-service-hosts id)
-        all-hosts (db/get-hosts)
-        hosts (difference (set all-hosts) (set service-hosts))]
+  (let [service-hosts (db/get-service-hosts id)]
     (list
       [:div.row.buffer-top
        [:div.col-md-6
         [:h4 "Hosts"]]
        [:div.col-md-6
-        [:div.pull-right {:style "margin-bottom: 10px;"}
-         [:form.form-inline {:method "post" :action(str "/services/" id "/hosts")}
-          [:div.form-group
-           [:label.sr-only {:for "host_id"} "Host"]
-           [:select.form-control {:id "host_id" :name "host_id"}
-            [:option]
-            (for [host hosts]
-              [:option {:value (:id host)} (:name host)])]]
-          "&nbsp;"
-          [:button.btn.btn-default {:type "submit"}
-           [:span.glyphicon.glyphicon-plus] " Add Host"]]]]]
+        (when-let [hosts (not-empty (difference (set (db/get-hosts)) (set service-hosts)))]
+          [:div.pull-right {:style "margin-bottom: 10px;"}
+           [:form.form-inline {:method "post" :action(str "/services/" id "/hosts")}
+            [:div.form-group
+             [:label.sr-only {:for "host_id"} "Host"]
+             [:select.form-control {:id "host_id" :name "host_id"}
+              [:option]
+              (for [host hosts]
+                [:option {:value (:id host)} (:name host)])]]
+            "&nbsp;"
+            [:button.btn.btn-default {:type "submit"}
+             [:span.glyphicon.glyphicon-plus] " Add Host"]]])]]
       [:table.table
        [:tr
         (map #(vector :th %) ["Name" "Status"])
