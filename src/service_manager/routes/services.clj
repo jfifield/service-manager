@@ -1,5 +1,6 @@
 (ns service-manager.routes.services
   (:require [compojure.core :refer :all]
+            [clojure.set :refer [difference]]
             [ring.util.response :as response]
             [service-manager.views.layout :as layout]
             [service-manager.views.form :refer :all]
@@ -78,7 +79,7 @@
 (defn view-service-hosts [id]
   (let [service-hosts (db/get-service-hosts id)
         all-hosts (db/get-hosts)
-        hosts (remove #(contains? (set (map :id service-hosts)) (:id %)) all-hosts)]
+        hosts (difference (set all-hosts) (set service-hosts))]
     (list
       [:div.row.buffer-top
        [:div.col-md-6
